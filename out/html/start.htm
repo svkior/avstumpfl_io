@@ -1,0 +1,44 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="up" href="#top" title="top" />
+<title>AVIO</title>
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript"> 
+
+function loadUrl(url)
+{
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	
+	document.getElementById('content').innerHTML = xmlhttp.responseText;
+ 
+}
+
+
+</script>
+
+
+
+</head>
+<!--nutch_noindex-->
+<frameset rows="180,*" border=0>
+  <frame src="navigation.htm" name="navigation" frameborder="0" scrolling="no" noresize>
+  <frame src="main.htm" name="data" frameborder="0" marginwidth="50">
+  <noframes>
+	Browser does not support frames !
+  </noframes>
+</frameset>
+<body>
+</body>
+</html>

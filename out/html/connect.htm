@@ -1,0 +1,161 @@
+<html>
+<head>
+<style TYPE="text/css">
+body {background:#fff url(background.png) repeat-x 0 0;}
+</style>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+var ck=0;
+var selectedNodeId=0;
+function drawPorts(nodeId)
+{
+	selectedNodeId = nodeId;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlhttp.open("GET",'remotePorts.htm?uniqueId='+nodeId+'&ck='+ck,false);
+	ck++;
+	xmlhttp.send(null);
+	ports = '<select name="ports2" size="5" onchange="drawChannelsRemote(this.form.ports2.value)">'
+	ports += xmlhttp.responseText;
+	ports += '</select>';
+	document.getElementById('ports2').innerHTML = ports;
+	arr = document.getElementsByName("uid").item(0).value = nodeId;
+}
+
+function setChannelRemote(channel)
+{
+	document.getElementsByName("channelRemoteStart").item(0).value = channel;
+	document.getElementsByName("channelRemoteStop").item(0).value = channel;
+}
+
+function setChannelLocal(channel)
+{
+	document.getElementsByName("channelLocal").item(0).value = channel;
+}
+
+function drawChannelsRemote(port)
+{
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlhttp.open("GET",'remotePortChannels.htm?uniqueId='+selectedNodeId+'&port='+port+'&ck='+ck,false);
+	ck++;
+	xmlhttp.send(null);
+	text = '<select name="channels2" size="5" onchange="setChannelRemote(this.form.channels2.value)">';
+	text += xmlhttp.responseText;
+	text += '</select>';
+	document.getElementById('channels2').innerHTML = text;
+	document.getElementsByName("portRemote").item(0).value = port;
+}
+  
+function drawChannelsLocal(port)
+{
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlhttp.open("GET",'localPortChannels.htm?uniqueId='+selectedNodeId+'&port='+port+'&ck='+ck,false);
+	ck++;
+	xmlhttp.send(null);
+	text = '<select name="channels1" size="5" onchange="setChannelLocal(this.form.channels1.value)">';
+	text += xmlhttp.responseText;
+	text += '</select>';
+	document.getElementById('channels1').innerHTML = text;
+	document.getElementsByName("portLocal").item(0).value = port;
+}
+
+
+</script>
+<title>Connect Channels</title>
+</head>
+<body>
+<h1>Connect Channels</h1>
+<h2>Local Node</h2>
+<table border="0">
+	<tr>
+		<td>
+			<p>Port:</p>
+			<form>
+			<select name="ports1" size="5" onchange="drawChannelsLocal(this.form.ports1.value)">
+				_NZZA_getSelectBox
+			</select>
+			</form>
+		</td>
+		<td>
+			<p>Channel:</p>
+			<form>
+			<span id="channels1">
+				<select name="channels1" size="5">
+				</select>
+			</span>
+			</form>
+		</td>
+	</tr>
+</table>
+
+<h2>Remote Node</h2>
+<table border="0">
+	<tr>
+		<td>
+			<p>Node:</p>
+			<form>
+			<select name="nodes2" size="5" onchange="drawPorts(this.form.nodes2.value)">
+				_NZZA_getRemoteNodes
+			</select>
+			</form>
+		</td>
+		<td>
+			<p>Port:</p>
+			<form>
+			<span id="ports2">
+				<select name="ports2" size="5" onchange="drawChannelsRemote(this.form.ports2.value)">
+
+				</select>
+			</span>
+			</form>
+		</td>
+		<td>
+			<p>Channel:</p>
+			<form>
+			<span id="channels2">
+				<select name="channels2" size="5">
+				</select>
+			</span>
+			</form>
+		</td>
+	</tr>
+</table>
+<a href="searchConnect.htm">Refresh</a> 
+	<form action="addSubscription.htm" method="GET">
+		<input name="uid" type="hidden" value="">
+		<input name="intervall" type="hidden" value="50">
+		<input name="portRemote" type="hidden" value="">
+		<input name="channelRemoteStart" type="hidden" value ="">
+		<input name="channelRemoteStop" type="hidden" value ="">
+		<input name="portLocal" type="hidden" value="">
+		<input name="channelLocal" type="hidden" value ="">
+		<input name="scale" type="hidden" value ="false">
+		<input name="web" type="hidden" value="true">
+		<input type="submit" value="Connect">
+	</form>
+
+</body>
+</html>

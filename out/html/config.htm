@@ -1,0 +1,201 @@
+<html>
+<head>
+<title>System Configuration</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+var ck=0;
+function showPassword(enable)
+{
+	var textChecked = 'Set password for unlock (optional)<br><input type="password" name="password" size="30" maxlength="30"><br>';
+	if(enable)
+	{
+		document.getElementById('passwordLock').innerHTML = textChecked;
+		document.getElementsByName('lockValue')[0].value = "checked";
+	}
+	else
+	{
+		document.getElementById('passwordLock').innerHTML = " ";
+		document.getElementsByName('lockValue')[0].value = "unchecked";
+	}
+}
+
+function setChannelLocal(channel)
+{
+	//document.getElementsByName("channelLocal").item(0).value = channel;
+	document.getElementById('renameChannel').value = channel;
+	var elt = document.getElementById('select1');
+	name= elt.options[elt.selectedIndex].text;
+	name = name.split(': ')[1];
+	text = '<input class="i1" name="nameChannel" type="text" size="30" maxlength="30" value="'+name+'">';
+	document.getElementById('renameChannelBox').innerHTML = text;
+}
+
+function drawChannelsLocal(port)
+{
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlhttp.open("GET",'localPortChannels.htm?uniqueId=0&port='+port+'&ck='+ck,false);
+	ck++;
+	xmlhttp.send(null);
+	text = '<select id="select1" name="channels1" size="5" onchange="setChannelLocal(this.form.channels1.value)">';
+	text += xmlhttp.responseText;
+	text += '</select>';
+	document.getElementById('channels1').innerHTML = text;
+	document.getElementsByName("portLocal").item(0).value = port;
+}
+
+</script>
+</head>
+<body>
+ _NZZA_getChanged 
+ _NZZA_getInfo
+<div id="node">
+<a name="node"></a>
+<h1>Node</h1>
+<form action="config.htm" method="GET">
+  Name:&nbsp; &nbsp;  <input class="i1" name="name" type="text" size="30" maxlength="30" value="_NZZA_getName ">
+  <br><br>Type:&nbsp; &nbsp; <input class="i1" name="type" type="text" size="30" maxlength="40" value="_NZZA_getType " readonly>
+  <br>
+  <br>
+  <p>Description:<br>
+  <br><textarea class="i1" name="description" cols="30" rows="3">_NZZA_getDescription </textarea>  
+  <br><br><input class="s1" type="submit" value="Save" background="#505050"></p>
+</form>
+ 
+</div>
+<a name="renamechannel"></a>
+<h2>Rename Channels</h2>
+
+<form action="config.htm" method="GET">
+	<table border="0">
+		<tr>
+			<p>Port:</p>
+				<form>
+				<select name="port" size="5" onchange="drawChannelsLocal(this.form.port.value)">
+					_NZZA_getSelectBox
+				</select>
+				</form>
+		</tr>
+		<tr>
+			<td>
+				
+			</td>
+			<td>
+				<p>Channel:</p>
+				<form id="channels1">
+					<select id="select1" name="channels1" size="5">
+					</select>
+				</form>
+			</td>
+			<td>
+				<div id="renameChannelBox">
+				</div>
+			</td>
+		</tr>
+	</table>
+	<input class="s1" type="submit" value="Save" background="#505050">
+	<input id="rename" name="rename" type="hidden" value="true">
+	<input id="renameChannel" name="channel" type="hidden" value="">
+	
+</form>
+<a name="network"></a>
+<h1>System Configuration</h1>
+<h2>Network</h2>
+
+<form action="config.htm" method="GET">
+<p>Ip Address</p>
+  <p><input class="i1" name="ip" type="text" size="30" maxlength="30" value="_NZZA_getIp "></p>
+<p>Subnet Mask
+  <br><input class="i1" name="subnet" type="text" size="30" maxlength="30" value="_NZZA_getSubnet "></p>
+  Gateway (Configuration is only neccesary for some logic scripts)
+  <br>
+  <input class="i1" name="gateway" type="text" size="30" maxlength="30" value="_NZZA_getGateway "></p>
+  <br>
+  <p><input class="s1" type="submit" value="Save">
+</form>
+
+
+<form action="form_logging" method = "GET">
+<a name="logging"></a>
+<h2>Logging</h2>
+<h3>Select logging level</h3>
+
+	<input type="radio" class="r1" name="level" value="0" _NZZA_checked0 >0: Off<br>
+	<input type="radio" name="level" value="1" _NZZA_checked1 >1: Fatal<br>
+	<input type="radio" name="level" value="2" _NZZA_checked2 >2: Error<br>
+	<input type="radio" name="level" value="3" _NZZA_checked3 >3: Warning<br>
+	<input type="radio" name="level" value="4" _NZZA_checked4 >4: Event<br>
+	<input type="radio" name="level" value="5" _NZZA_checked5 >5: Support<br><br>
+	<input name="ip" type="text" value="_NZZA_getLogIp " size="30" maxlength="30"><br><br>
+	<input type="checkbox" name="file" value="true" _NZZA_checked_file >Log to file<br>
+	<input type="checkbox" name="user" value="true" _NZZA_checked_user >Enable Logging<br>
+	<input type="checkbox" name="intern" value="true" _NZZA_checked_intern >Intern Logging<br><br>
+	<p><input class="s1" type="submit" class="b2" value="Save"></p>
+
+<p>
+</form>
+<p></p>
+<form action="form_logging" method = "GET">
+  
+</form>
+</p>
+<br>
+<a name="lock"></a>
+<h2>Lock</h2>
+<form name="lock" action="config.htm">
+	<input name="lockValue" type="hidden" value="_NZZA_checkedLock ">
+	<input type="checkbox" name="lockCheckbox" onchange="showPassword(this.form.lockCheckbox.checked)" _NZZA_checkedLock >Lock Node<br>
+
+<div id="passwordLock">
+
+</div>
+
+
+
+
+<br>
+<a name="update"></a>
+<h2>Update Firmware</h2>
+Upload file "image.bin" here
+<FORM ENCTYPE="multipart/form-data" METHOD="POST" ACTION="http://_NZZA_getIp
+/Forms/upload_firmware_1" name="upgrade_form" onSubmit="return doValidate();">
+<INPUT TYPE="HIDDEN" NAME="storage" VALUE="firmware">
+<INPUT TYPE="FILE" NAME="firmware" SIZE="48" MAXLENGTH="255"><br>
+<div id="upgradeMessage"></div>
+<INPUT TYPE="SUBMIT" NAME="Submit" VALUE="Upload">&nbsp;&nbsp;
+</form>
+<br>
+
+<h2>Update Filesystem</h1>
+Upload file "files.dat" here
+<FORM ENCTYPE="multipart/form-data" METHOD="POST" ACTION="uploadFilesystem.htm" name="upload_form" onSubmit=""><table border="0" cellpadding="2" cellspacing="0">
+	<INPUT TYPE="FILE" NAME="file" SIZE="32" MAXLENGTH="64"><br>
+	<INPUT TYPE="SUBMIT" NAME="Submit" VALUE="upload"><br>
+</form>
+
+<br>
+
+<p><input type="submit" class="s1" value="Save"></p>
+</form>
+<br>
+<h2>Cycle Time</h2>
+Dont change unless you know what you are doing !<br>
+<form name="cylce" action="config.htm">
+	<input name="cycleTime" type="text" size="10" value="_NZZA_getCycleTime ">ms<br>
+	<input type="submit" class="s1" value="Save"></p>
+</form>
+
+<br>
+<a name="restart"></a>
+<h2>Restart</h2>
+<p><a href="reset.htm">Restart IObox</a></p>
+
+</body>
+</html>

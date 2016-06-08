@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="up" href="#top" title="top" />
+<title>AVIO</title>
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+
+<script type="text/javascript"> 
+
+function loadUrl(url)
+{
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	
+	document.getElementById('content').innerHTML = xmlhttp.responseText;
+ 
+}
+
+
+</script>
+
+<style TYPE="text/css">
+body {margin:0;padding:0;background:#fff url(gradient.jpg) repeat-x 0 0;}
+a {text-decoration:none;}
+img {border:0;}
+p {margin:0;}
+fieldset {margin:0;padding:0;border:0;}
+.c {display:block;clear:both;}
+
+#body {background:transparent url(bgheader1.png) repeat left 0px;}
+#header * {font-family:Verdana,Arial,Helvetica,Sans-Serif;font-size:12px;}
+#header .navigation a {display:block;float:left;border-right:1px solid #fff;padding:0 5px;margin:4px 0;}
+#header .navigation .home {color:#fff;}
+#header .navigation .last {border:0;} 
+
+
+#navigation {z-index:0;position:relative;height:200px;}
+#navigation h1.logo {position:absolute;top:10px;left:0px;width:500px;height:500px;margin:0;padding:0;text-indent:-5000px;background:transparent url() no-repeat 0 0;cursor:pointer;}
+#navigation .main {z-index:20;position:absolute;top:40px;left:200px;width:50%;}
+#navigation .main a.mainlink {display:block;float:left;padding:0 10px 0 0;font-family:Segoe UI,Arial,Helvetica,Sans-Serif;font-size:25px;color:#fff;font-weight:normal;}
+#navigation .main a.mainlink:hover, #navigation .main a.active {color:#ffd000;}
+#navigation .main a.mainlink span {display:block;}
+#navigation .main a.mainlink .textframe {display:block;height:30px;}
+#navigation .main a.mainlink .hover {display:none;}
+#navigation .main a.mainlink:hover .standard, #navigation .main a.active .standard {display:none;}
+#navigation .main a.mainlink:hover .hover, #navigation .main a.active .hover {display:block;}
+
+#navigation .main a.modulelink {display:block;float:left;padding:0 10px 0 0;font-family:Segoe UI,Arial,Helvetica,Sans-Serif;font-size:25px;color:#7249b8;font-weight:bold;}
+#navigation .main a.modulelink:hover, #navigation .main a.active {color:#ffd000;}
+#navigation .main a.modulelink span {display:block;}
+#navigation .main a.modulelink .textframe {display:block;height:30px;}
+#navigation .main a.modulelink .hover {display:none;}
+#navigation .main a.modulelink:hover .standard, #navigation .main a.active .standard {display:none;}
+#navigation .main a.modulelink:hover .hover, #navigation .main a.active .hover {display:block;}
+
+
+#content {position:absolute;top:150px;left:45px;width:950px;height:0px;margin:0;padding:0;}
+
+</style>
+
+</head>
+<body>
+<!--nutch_noindex-->
+<div id="logoLeft">
+<a href="start.htm">
+<img src="logoLeft.png" align="left">
+</a>
+</div>
+<div id="logoRight">
+<a href="start.htm">
+<img src="logoRight.png" align="right">
+</a>
+</div>
+<div id="body">
+	<div id="page">
+	
+		<div id="navigation">
+			<div class="main">
+			    <b><a class="modulelink" href="main.htm" target="data">_NZZA_getModuleName </a></b>
+				<br><br>
+				<a class="mainlink" href="channelShowValues.htm" target="data"> <span class="standard">Values</span><span class="hover">Values</span></a>
+				<a class="mainlink" href="searchConnect.htm" target="data"><span class="standard">Connect</span><span class="hover">Connect</span></a>
+				<a class="mainlink" href="connections.htm" target="data"><span class="standard">Connections</span><span class="hover">Connections</span></a>
+				<a class="mainlink" href="drivers.htm" target="data"><span class="standard">Driver</span><span class="hover">Driver</span></a>
+				<a class="mainlink" href="scripts.htm" target="data"><span class="standard">Scripts</span><span class="hover">Scripts</span></a>				
+				<a class="mainlink" href="config.htm" target="data"><span class="standard">Setup</span><span class="hover">Setup</span></a>
+			</div>			
+		</div>
+	</div>
+</div>
+
+
+<!--/nutch_noindex-->
+</body>
+</html>

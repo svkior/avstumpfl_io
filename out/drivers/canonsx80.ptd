@@ -1,0 +1,122 @@
+[Driver]
+Name=Canon SX80 Projector
+Version=1.0
+Date=21.08.2008
+Author=Dieter Hartmann
+Comment=Basic control of Canon SX80 projector, serial port setup: 19.200 bps, 8 databits, no parity, 2 stoppbits; commands with feedback interpretation and request options
+ID used last=11
+Databits=8
+Parity=N
+Stopbits=2
+Baudrate=19200
+
+[Power:ON]
+ShortName=Proj.ON
+Icon=22
+Info=Initialises projector - power ON mode
+ID=2
+SubID=1
+Send="POWER ON" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=2000
+Retries=2
+
+[Power:OFF]
+ShortName=Proj.OFF
+Icon=21
+Info=Initialises projector - cool down, power OFF mode
+ID=2
+SubID=2
+Send="POWER OFF" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=2000
+Retries=2
+
+[Autosetup:Focus]
+ShortName=ASet.Focus
+Icon=13
+Info=Auto focusing
+ID=3
+SubID=1
+Send="AUTOSETEXE FOCUS" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=8000
+Retries=1
+
+[Autosetup:Input]	
+ShortName=ASet.Input
+Icon=13
+Info=Automatic set input
+ID=3
+SubID=2
+Send="AUTOSETEXE INPUT" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=5000
+Retries=1
+
+[Autosetup:Auto PC alignment]
+ShortName=AutoPC.alignment
+Icon=13
+Info=Auto align picture - resets input signal settings
+ID=3
+SubID=3
+Send="AUTOPC" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=8000
+Retries=1
+
+[Input:Digital PC]				
+ShortName=Input.DVI
+Icon=18
+Info=Switch input to digital RGB in (DVI-I-connector)
+ID=4
+SubID=1
+Send="INPUT=D-RGB" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=2000
+Retries=2
+
+[Input:HDMI]				
+ShortName=Input.HDMI
+Icon=18
+Info=Switch input to HDMI connector
+ID=4
+SubID=2
+Send="INPUT=HDMI" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=2000
+Retries=2
+
+[Aspect:Auto]
+ShortName=Aspect.Auto
+Icon=20
+Info=Sets screen sizes
+ID=5
+SubID=1
+Send="ASPECT=AUTO" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=2000
+Retries=2
+
+[Aspect:4 to 3]
+ShortName=Aspect.4:3
+Icon=20
+Info=Sets screen sizes
+ID=5
+SubID=2
+Send="ASPECT=4:3" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=2000
+Retries=2
+
+[Aspect:16 to 9]
+ShortName=Aspect.16:9
+Icon=20
+Info=Sets screen sizes
+ID=5
+SubID=3
+Send="ASPECT=16:9" 0x0d
+ReceiveAck="i:OK" 0x0D 
+ReciveTimeout=2000
+Retries=2
+

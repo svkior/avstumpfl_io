@@ -1,0 +1,349 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css">
+</style>
+<script type="text/javascript">
+var lastArr;
+var channel=0;
+var channelName = "";
+var channelType = "";
+var newChannelSelected = true;
+var ck=0;
+var dragdealers=new Array();
+var sliderVals=new Array();
+var lastSliderVals=new Array();
+var maxValues = new Array();
+var names = new Array();
+var updateSlider=true;
+var firstRun=true;
+var statusVals=new Array();
+function loadXMLDoc()
+{
+	url = "values.htm?port="+channel+"&ck="+ck;
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	var arr = new Array();
+	arr =xmlhttp.responseText.split(' ');
+	 
+	if(newChannelSelected)
+	{
+		newChannelSelected = false;
+		loadValueProperties();
+		lastArr=new Array;
+		drawValueBoxes(arr.length-1,channelName);
+		for(i=0;i<arr.length-1;i++)
+		{
+			lastSliderVals[i] = 0;
+		}
+		newChannelSelected = false;
+	}
+	
+	for(var i=0;i<arr.length-1;i++)
+	{
+		if(arr[i] != "-1")
+		{
+			if(arr[i] != lastArr[i])
+			{
+				setValueBox(i,parseInt(arr[i]));
+				lastArr[i] = arr[i];
+			}
+		}
+	}
+	newChannelSelected = false;
+}
+
+function loadValueProperties()
+{
+	url = "valueProperties.htm?port="+channel+"&ck="+ck+"&type=showValues";
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	var arr = new Array();
+	arr =xmlhttp.responseText.split('~');
+	channelType = arr[0];
+	for(var i=1;i<arr.length-1;i++)
+	{
+		maxValues[i-1]=arr[i];
+	}
+	url = "valueProperties.htm?port="+channel+"&ck="+ck+"&type=showNames";
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	var arr = new Array();
+	arr =xmlhttp.responseText.split('~');;
+	if(arr.length != maxValues.length)
+	{
+		for(var i=0;i<arr.length;i++)
+		{
+			names[i]=arr[i];
+		}
+	}
+}
+
+function setEvent(port,_channel,val)
+{
+	url = "setEvent.htm?port="+port+"&channel="+_channel+"&val="+val+"&ck="+ck;
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+}
+
+function selectChannel(newChannel,name)
+{
+	newChannelSelected = true;
+	channel = newChannel;
+	var res="";
+	var resIdx=0;
+	var i=0;
+	channelName = name;
+}
+
+function drawValueBoxes(count,name)
+{
+	var i=0;
+	var text = ""
+	var valuesHeader = "<h2>"+name+"</h2>";
+	document.getElementById('valuesHeader').innerHTML = valuesHeader;
+	switch(channelType)
+	{
+		case "analog-in":
+		case "analog-out":
+			for(i=0;i<count;i++)
+			{
+				if(i<1000)
+					text += "0";
+				if(i<100)
+					text += "0";
+				if(i<10)
+					text += "0";
+				text +=i+1+':&nbsp; <input name="'+i+'" type="text" size="3" maxlength="30" value="-1">';
+				text +=		'<div name=slider'+i+' id="slider'+i+'" class="dragdealer rounded-cornered"><div class="red-bar handle"></div></div>';
+			}
+			document.getElementById('values').innerHTML = text;
+			for(i=0;i<count;i++)
+			{
+				var wrapper=document.getElementsByName('slider'+i).item(0);
+				if(channelType=="analog-in")
+				{
+					dragdealers[i] = new Dragdealer(wrapper,
+					{
+						animationCallback: function(x, y)
+						{
+						}
+					});
+				}   
+				else if(channelType == "analog-out")
+				{
+					dragdealers[i] = new Dragdealer(wrapper,
+					{
+						animationCallback: function(x, y)
+						{
+						}
+					});
+				}
+					
+			}
+			break;
+		case "leds":
+		case "relais":
+		case "remote-in":
+		case "buttons":
+		case "KNX":
+			text += '<table border=0>';
+			for(i=0;i<count;i++)
+			{
+				text += '<tr><td>';
+				text += i+1+": "+names[i]+':&nbsp; </td><td><input name="'+i+'" type="text" size="3" maxlength="30" value="-1"></td><td>';
+				text +=		'<div name="status'+i+'" id="status'+i+'"><img src="status1.png" border="0" alt="status1" onclick="statusToggle('+i+')"></div></td>';
+				text += '</tr>';
+				statusVals[i] = 0;
+			}
+			document.getElementById('values').innerHTML = text;
+			break;
+		case "serial":
+			text += '<table border=0>';
+			buttonIdx=0;
+			for(i=0;i<count;i++)
+			{
+				if(maxValues[i] == 1)
+				{
+					text += '<tr><td>';
+					text += i+1+": "+names[i]+':&nbsp; </td><td><input name="'+i+'" type="text" size="3" maxlength="30" value="-1"></td><td>';
+					text +=		'<div name="status'+i+'" id="status'+i+'"><img src="status1.png" border="0" alt="status1" onmousedown="statusPress('+i+','+buttonIdx+',1)" onmouseup="statusPress('+i+','+buttonIdx+',0)"></div></td>';
+					text += '</tr>';
+					buttonIdx++;
+				}
+				else
+				{
+					text += '<tr><td>';
+					text += i+1+": "+names[i]+':&nbsp; </td><td><input name="'+i+'" type="text" size="3" maxlength="30" value="-1" onchange="changedValue(this.name,this.value)"></td><td>';
+					text +=		'<div name="status'+i+'" id="status'+i+'"></div></td>';
+					text += '</tr>';
+				}
+			}
+			document.getElementById('values').innerHTML = text;
+			break;
+		default:   
+			text += '<table border=0>';
+			text += '<tr>';
+			for(i=0;i<count;i++)
+			{
+				if(i%8 == 0)
+				{
+					text += '</tr><tr>';
+				}		
+				text += "<td width='10%'><div align='left'>"+i+": "+names[i]+'&nbsp; </div><div align="top"><input name="'+i+'" type="text" size="3" maxlength="30" value="-1" onchange="changedValue(this.name,this.value)"></div></td>';
+		
+			}
+			text += "</table>";
+			document.getElementById('values').innerHTML = text;
+
+	}
+}
+
+function setImage(idx,src)
+{
+	img = new Image();
+	img.src = src;
+	window.document.images[idx].src = img.src;
+}
+  
+function statusToggle(idx)
+{
+	if(statusVals[idx] == 0)
+	{
+		statusVals[idx] = 1;
+		setImage(idx,"status2.png");
+	}
+	else
+	{
+		statusVals[idx] = 0;
+		setImage(idx,"status1.png");
+	}
+	setEvent(channel,idx,statusVals[idx]);
+}
+
+function statusPress(idx,buttonIdx,dir)
+{
+	if(dir == 1)
+	{
+		setImage(buttonIdx,"status2.png");
+		setEvent(channel,idx,1);
+	}
+	else
+	{
+		setImage(buttonIdx,"status1.png");
+		setEvent(channel,idx,0);
+	}
+}
+
+function setValueBox(num,val)
+{
+	document.getElementsByName(num).item(0).value = val;
+	if(channelType == "analog-out")
+	{
+		if(num < dragdealers.length)
+		{
+			if(newChannelSelected)
+			{
+				dragdealers[num].setValue(val/maxValues[num]);
+			}
+		}
+	}
+	else if(channelType == "analog-in")
+	{
+		if(num < dragdealers.length)
+		{
+			
+			dragdealers[num].setValue(val/maxValues[num]);
+		}
+	}
+	else if(channelType == "leds" || channelType == "remote-in" || channelType == "relais" || channelType == "buttons" )
+	{
+		if(val>0)
+			setImage(num,"status2.png");
+		else
+			setImage(num,"status1.png");
+	}
+}
+
+function setSlider()
+{
+	updateSlider = false;
+	for(i=0;i<dragdealers.length;i++)
+	{
+		sliderVals[i] = parseInt(dragdealers[i].value.current[0]*maxValues[i]);
+		if(sliderVals[i] != lastSliderVals[i] && dragdealers[i].value.current[0] == dragdealers[i].value.target[0])
+		{
+			setEvent(channel,i,sliderVals[i]);
+			lastSliderVals[i] = sliderVals[i];
+		}
+	}
+	updateSlider=true;
+}
+
+function changedValue(idx,value)
+{
+	//sic! channel means port
+	setEvent(channel,idx,value)
+}
+</script>
+</head>
+<body>
+<h1>Show Values</h1>
+<div id="config">
+<form name=formSelect action="select.htm">
+  <p>Select Port:</p>
+  <p>  
+    <select name="Channel" size="15" onchange="loadValueProperties();selectChannel(this.form.Channel.value, this.form.Channel.options[this.form.Channel.selectedIndex].text);">
+		_NZZA_getSelectBox
+    </select>
+  </p>   
+</form>
+</div>
+<div id="valuesHeader">   
+</div>
+<div id="values">
+</div> 
+<script type="text/javascript">
+setInterval(loadXMLDoc, 1000);
+setInterval(setSlider, 400);
+</script>
+
+
+</body>
+</html> 

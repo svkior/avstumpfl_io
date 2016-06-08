@@ -1,0 +1,289 @@
+<html>
+<head>
+<title>Scripts</title>
+<style TYPE="text/css">
+body {background:#fff url(background.png) repeat-x 0 0;}
+</style>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+var ck=0;
+var selectedFile="";
+//var params = new Array();
+var paramsChanged;
+var paramsChangedInstalled;
+var defaultSlot = _NZZA_getFreeSlot ;
+
+function drawScriptInfo(filename,section)
+{
+	selectedFile=filename;
+	url = "scriptInfo.htm?filename="+filename+"&ck="+ck;
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	var arr = new Array();
+	arr =xmlhttp.responseText.split('~');
+	var description = arr[0];
+	var author = arr[1];
+	var params = new Array();
+	var paramsIdx=0;
+	for(var i=2;i<arr.length;i+=3)
+	{
+		params[paramsIdx] = arr[i];
+		params[paramsIdx+1] = arr[i+1];
+		params[paramsIdx+2] = arr[i+2];
+		paramsIdx+=3;
+	}
+	var text = "";
+	text += 'Description:<br><textarea class="i1" name="description" cols="80" rows="6" readonly>'+description+'</textarea><br>';
+	text += 'Author:<br><input class="i1" name="author" size="30" value="'+author+'" readonly></input><br>';
+	text += '<h3>Parameters:</h3>';
+	var changedIdx=0;
+	paramsChanged = new Array();
+	for(var i=0;i<params.length;i+=3)
+	{
+		text += params[i]+':<br><input class="i1" id="param'+i+'" name="param'+i+'" value="'+params[i+1]+'" size="30" onchange="paramsChanged['+changedIdx+']=this.value"></input>';
+		text += ' <font size="-1">'+params[i+2] + '</font><br>';
+		paramsChanged[changedIdx] = params[i+1];
+		changedIdx++;
+	}
+	
+	var ext = filename.substr(filename.lastIndexOf('.') + 1);
+	if(ext == "log")
+		document.getElementsByName("slot")[0].value = 0;
+	else
+		document.getElementsByName('slot')[0].value = defaultSlot;
+	
+	if(filename.substr(0,7) == "custom/")
+	{
+		document.getElementById("deleteButton").innerHTML = '<input type="button" name="buttonDelete" value="Delete" onclick="deleteScriptFile()">';
+	}
+	else
+	{
+		document.getElementById("deleteButton").innerHTML = '<input type="button" class="disabled" name="buttonDelete" value="Delete" disabled onclick="deleteScriptFile()">';
+	}
+	
+	document.getElementById(section).innerHTML = text;
+}
+
+function drawScriptInfoInstalled(port,section)
+{
+	url = "scriptInfo.htm?port="+port+"&ck="+ck;
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	var arr = new Array();
+	arr =xmlhttp.responseText.split('~');
+	var port = arr[0];
+	var slot = arr[1];
+	var description = arr[2];
+	var author = arr[3];
+	paramsChangedInstalled = new Array();
+	var paramsIdx=0;
+	params = new Array();
+	for(var i=4;i<arr.length;i+=3)
+	{
+		params[paramsIdx] = arr[i];
+		params[paramsIdx+1] = arr[i+1];
+		params[paramsIdx+2] = arr[i+2];
+		paramsIdx+=3;
+	}
+	var text = "";
+	text += 'Description:<br><textarea class="i1" name="description" cols="30" rows="3" readonly>'+description+'</textarea><br>';
+	text += 'Author:<br><input class="i1" name="author" size="30" value="'+author+'" readonly></input><br>';
+	text += '<h3>Parameters:</h3>';
+	var changedIdx=0;
+	paramsChangedInstalled = new Array();
+	for(var i=0;i<params.length;i+=3)
+	{
+		text += params[i]+':<br><input class="i1" id="param'+i+'" name="param'+i+'" value="'+params[i+1]+'" size="30" onchange="paramsChangedInstalled['+changedIdx+']=this.value"></input>';
+		text += ' <font size="-1">'+params[i+2] + '</font><br>';
+		paramsChangedInstalled[changedIdx] = params[i+1];
+		changedIdx++;
+	}
+	document.getElementsByName("slotInstalled")[0].value = slot;
+	document.getElementsByName("portInstalled")[0].value = port;
+	document.getElementById(section).innerHTML = text;
+}
+
+function changeScript()
+{
+	var portOld=document.formInstalled.installedScript.options[document.formInstalled.installedScript.selectedIndex].value;
+	var slot=document.formInstalled.slotInstalled.value;
+	var portNew=document.formInstalled.portInstalled.value;
+	url="scripts.htm?changeScript="+portOld+"&port="+portNew+"&slot="+slot;
+	for(var i=0;i<paramsChangedInstalled.length;i++)
+	{
+		url += "&param"+i+"="+paramsChangedInstalled[i];
+	}
+	ck++;
+	document.formInstalled.buttonChange.value="Changing Script...";
+	document.formInstalled.buttonChange.disabled=true;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	location.reload();
+	document.form1.buttonAdd.disabled=false;
+}
+
+function removeInstalledScript()
+{
+	port=document.formInstalled.installedScript.options[document.formInstalled.installedScript.selectedIndex].value;
+	url = "scripts.htm?removeScript="+port;
+	document.formInstalled.buttonRemove.value="Removing Script...";
+	document.formInstalled.buttonChange.disabled=true;
+	document.formInstalled.buttonRemove.disabled=true;
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	location.reload();
+	document.formInstalled.buttonRemove.value="Remove";
+	document.formInstalled.buttonChange.disabled=false;
+	document.formInstalled.buttonRemove.disabled=false;
+	
+}
+
+function deleteScriptFile()
+{
+	var filename=document.form1.addScript.options[document.form1.addScript.selectedIndex].value;
+	url="scripts.htm?deleteScript="+filename;
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	location.reload();
+}
+
+function addScriptFile()
+{
+	var filename=document.form1.addScript.options[document.form1.addScript.selectedIndex].value;
+	var slot = document.form1.slot.value;
+	var ext = filename.substr(filename.lastIndexOf('.') + 1);
+	if(ext != "log" && slot == 0)
+    {
+		alert("Only pure logic files (without time delay) can be loaded into slot 0");
+		return;
+	}	
+	document.form1.buttonAdd.value="Adding Script...";
+	document.form1.buttonAdd.disabled=true;
+	var port=document.form1.port.value;
+	url="scripts.htm?addScript="+filename+"&port="+port+"&slot="+slot;
+	for(var i=0;i<paramsChanged.length;i++)
+	{
+		url += "&param"+i+"="+paramsChanged[i];
+	}
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	location.reload();
+	document.form1.buttonAdd.disabled=false;
+}
+</script>
+_NZZA_scriptlink
+</head>
+<body>
+<p>Works best in Firefox (Beta)</p>
+<h1>Installed Scripts</h1>
+_NZZA_uploadScript 
+<h2>Used Avio Script ressources</b></h2>
+<font size=2>
+_NZZA_getRessources
+</font>
+<br><br>
+<form action="scripts.htm" name="formInstalled">
+  <p>
+    <select name="installedScript" size="10" onchange="drawScriptInfoInstalled(document.formInstalled.installedScript.options[document.formInstalled.installedScript.selectedIndex].value,'scriptInfoInstalled')">
+      _NZZA_getScripts 
+    </select>
+	<input type="hidden" name="channel" value="" ><br><br>
+	<b>Port </b><input name="portInstalled" type="text" size="10" maxlength="10" value=""><br>
+	<b>Slot </b><input name="slotInstalled" type="text" size="5" maxlength="5" value="">
+	<div id="scriptInfoInstalled">
+	</div>
+	<p>	
+		<input type="button" name="buttonChange" value="Change" onclick="changeScript()">
+		<input type="button" name="buttonRemove" value="Remove" onclick="removeInstalledScript()">
+	</p>
+  </p>
+</form>
+
+<br><br>
+<h1>Add Script</h1>
+<h2>Script Files</h2>
+<form action="scripts.htm" name="form1"> 
+  <p>
+    <select id="selectScriptFile" name="addScript" size="10" onchange="drawScriptInfo(document.form1.addScript.options[document.form1.addScript.selectedIndex].value,'scriptInfoAdd')">
+		_NZZA_getScriptFiles 
+    </select>
+	<br>
+	<b>Port </b><input name="port" type="text" size="10" maxlength="10" value="_NZZA_getFreeScriptPort "><br>
+	<b>Slot </b><input name="slot" type="text" size="5" maxlength="5" value="">
+	<div id="scriptInfoAdd">
+	</div>
+	<p><input type="button" name="buttonAdd" value="Add Script" onclick="addScriptFile()"></p>
+  </p>  
+</form>
+<form>
+<p>
+<div id="deleteButton">
+<input type="button" name="buttonDelete" class="disabled" value="Delete" disabled onclick="deleteScriptFile()">
+</div>
+</form>
+
+<h1>Upload Script File</h1>
+<FORM ENCTYPE="multipart/form-data" METHOD="POST" ACTION="scripts.htm" name="upload_form" onSubmit=""><table border="0" cellpadding="2" cellspacing="0">
+	Filename:<br>
+	<INPUT TYPE="HIDDEN" NAME="curdir" VALUE="FLASH0/scripts"><INPUT TYPE="FILE" NAME="file" SIZE="32" MAXLENGTH="64"><br>
+	<INPUT TYPE="SUBMIT" NAME="Submit" VALUE="upload"><br>
+</form>
+<br>
+<br>
+<p><a href="http://www.lua.org" target="_new"> <img src="powered-by-lua.gif" alt="Powered by Lua"> </a></p>
+
+</body>
+</html>

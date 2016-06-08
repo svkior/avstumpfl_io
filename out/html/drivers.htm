@@ -1,0 +1,150 @@
+<html>
+<head>
+<title>Drivers</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+
+var ck=0;
+var driverFileSelected=-1;
+
+function drawDriverInfo(idx,section)
+{
+	url = "driverInfo.htm?idx="+idx+"&ck="+ck;
+	ck++;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url,false);
+	xmlhttp.send(null);
+	var arr = new Array();
+	arr =xmlhttp.responseText.split('~');
+	
+	var name = arr[0];
+	var type = arr[1];
+	var file = arr[2];
+	var address = arr[3];
+	text = '<form action="drivers.htm">';
+	text += '<b>name:</b><input name="name" type="text" size="15" maxlength="20" value="'+name+'"><br>';
+	//text = '<b>name: </b>'+name+'<br><b>type: </b>'+type+'<br><b>filename: </b>'+file+'<br>';
+	text += '<b>port address: </b>';
+	text += '<input name="portAddress" type="text" size="10" maxlength="10" value="'+address+'"><br>';
+	if(type == "uart")
+	{
+		var baudrate = arr[4];
+		var stopbits = arr[5];
+		var parity = arr[6];
+		var comport = arr[7];
+		//text += '<form action="drivers.htm">';
+		text += '<b>baudrate:</b><input name="baudrate" type="text" size="10" maxlength="10" value="'+baudrate+'">';
+		text += '<br><b>Stopbits: </b><input name="stopbits" type="text" size="10" maxlength="10" value="'+stopbits+'">';
+		text += '<br><b>parity: </b>';
+		text += '<select name="parity">';
+		text += '<option value="none" '; if(parity == 0) text+='selected'; text+='>none</option>';
+		text += '<option value="odd" ';  if(parity == 1) text+='selected'; text+='>odd</option>';
+		text += '<option value="even" '; if(parity == 2) text+='selected'; text+='>even</option></select>';
+		text += '<br><b>com port:</b><select name="comport">';
+		text += '<option value="1" ';if(comport==1) text += 'selected '; text+='>Port A</option>';
+		text += '<option value="2" ';if(comport==2) text += 'selected '; text+='>Port B</option>';
+		text += '<option value="3" ';if(comport==3) text += 'selected '; text+='>Port C</option>';
+		text += '<option value="4" ';if(comport==4) text += 'selected '; text+='>Port D</option><br>';
+		text += '</select>';
+		text += '<input type="hidden" name="type" value="'+type+'">';
+		text += '<input type="hidden" name="driverIdx" value="'+idx+'">';
+		text += '<p><br><input type="submit" value="Change"></p>';
+		text +='</p></form>';
+	}
+	else if(type == "knx")
+	{
+		var gateway = arr[4];
+		var ip = arr[5];
+		var port = arr[6];
+		//text += '<form action="drivers.htm">';
+		text += '<p><b>gateway:</b> <br><select name="gateway"><option value="ABB">ABB</option></select><br>';
+		text += '<br><b>ip:</b><br><input name="ip" type="text" size="10" maxlength="20" value="'+ip+'">';
+		text += '<br><b>network port:</b><br><input name="port" type="text" size="10" maxlength="10" value="'+port+'">';
+		text += '<input type="hidden" name="type" value="'+type+'">';
+		text += '<input type="hidden" name="driverIdx" value="'+idx+'">';
+		text += '<p><input type="submit" value="Change"></p>'
+		text += '</form>';
+	}
+	else if(type == "udp" || type == "tcp")
+	{
+		var ip = arr[4];
+		var port = arr[5];
+		//text += '<form action="drivers.htm">';
+		text += '<b>ip:</b><br><input name="ip" type="text" size="15" maxlength="20" value="'+ip+'">';
+		text += '<br><b>network port:</b><br><input name="port" type="text" size="10" maxlength="10" value="'+port+'">';
+		text += '<input type="hidden" name="type" value="'+type+'">';
+		text += '<input type="hidden" name="driverIdx" value="'+idx+'">';
+		text += '<p><input type="submit" value="Change"></p>'
+		text += '</form>';
+	}
+	text += '<form>';
+	text += '<input type="button" value="Remove" ONCLICK="window.location.href=\'drivers.htm?removeDriver=true&idx='+idx+'\'">';
+	text += '</form>';
+	document.getElementById(section).innerHTML = text;
+}
+
+function removeDriverFile()
+{
+	var x=document.getElementById("selectDriverFile").selectedIndex;
+	var y=document.getElementById("selectDriverFile").options;
+	window.location.href="drivers.htm?removeDriverFile=true&file="+y[x].text;
+}
+
+</script>
+</head>
+<body>
+_NZZA_addDriverFile
+_NZZA_configDriver 
+_NZZA_removeDriver 
+_NZZA_removeDriverFile 
+_NZZA_uploadDriver 
+<h1>Installed Drivers</h1>
+
+<form action="drivers.htm">
+  <p>
+    <select name="driverIdx" size="5" onchange="drawDriverInfo(this.form.driverIdx.selectedIndex,'driverInfo')">
+      _NZZA_getDrivers 
+    </select>
+	<input type="hidden" name="channel" value="">
+  </p>
+</form>
+
+<div id="driverInfo">
+</div>
+<br><br>
+<h1>Add Driver File</h1>
+
+<FORM ENCTYPE="multipart/form-data" METHOD="POST" ACTION="drivers.htm" name="upload_form" onSubmit=""><table border="0" cellpadding="2" cellspacing="0">
+	Filename:<br>
+	<INPUT TYPE="HIDDEN" NAME="curdir" VALUE="FLASH0/drivers"><INPUT TYPE="FILE" NAME="file" SIZE="32" MAXLENGTH="64"><br>
+	<INPUT TYPE="SUBMIT" NAME="Submit" VALUE="upload"><br>
+</form>
+<br><br>
+<h1>Add Driver</h1>
+<h2>Driver Files</h2>
+<form action="drivers.htm">
+  <p>
+    <select id="selectDriverFile" name="addDriver" size="5" onchange="driverFileSelected=this.form.addDriver.option">
+    _NZZA_getDriverFiles 
+    </select>
+	<br>
+	<b>Port </b><input name="port" type="text" size="10" maxlength="10" value="_NZZA_getFreePort ">
+	<p><input type="submit" value="Add Driver"></p>
+  </p>
+</form>
+
+<form>
+<p><input type="button" value="Remove" onclick="removeDriverFile()">
+</form>
+
+
+
+</body>
+</html>

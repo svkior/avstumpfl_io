@@ -1,0 +1,187 @@
+<html>
+<head>
+<title>System Configuration</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+var ck=0;
+_NZZA_webserverPort
+function showPassword(enable)
+{
+	var textChecked = 'Set password for unlock (optional)<br><input type="password" name="password" size="30" maxlength="30"><br>';
+	if(enable)
+	{
+		document.getElementById('passwordLock').innerHTML = textChecked;
+		document.getElementsByName('lockValue')[0].value = "checked";
+	}
+	else
+	{
+		document.getElementById('passwordLock').innerHTML = " ";
+		document.getElementsByName('lockValue')[0].value = "unchecked";
+	}
+}
+
+function showWebserverport(value)
+{
+	var textChecked = 'Set Network Port: <br><input type="input" name="webserverportinput" size="30" maxlength="30" value="_NZZA_getWebserverPort "><br>';
+	if(value == "custom")
+	{
+		document.getElementById('webserverportdiv').innerHTML = textChecked;
+	}
+	else
+	{
+		document.getElementById('webserverportdiv').innerHTML = " ";
+	}
+}
+
+function setChannelLocal(channel)
+{
+	//document.getElementsByName("channelLocal").item(0).value = channel;
+	document.getElementById('renameChannel').value = channel;
+	var elt = document.getElementById('select1');
+	name= elt.options[elt.selectedIndex].text;
+	name = name.split(': ')[1];
+	text = '<input class="i1" name="nameChannel" type="text" size="30" maxlength="30" value="'+name+'">';
+	document.getElementById('renameChannelBox').innerHTML = text;
+}
+
+function drawChannelsLocal(port)
+{
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	xmlhttp.open("GET",'localPortChannels.htm?uniqueId=0&port='+port+'&ck='+ck,false);
+	ck++;
+	xmlhttp.send(null);
+	text = '<select id="select1" name="channels1" size="5" onchange="setChannelLocal(this.form.channels1.value)">';
+	text += xmlhttp.responseText;
+	text += '</select>';
+	document.getElementById('channels1').innerHTML = text;
+	document.getElementsByName("portLocal").item(0).value = port;
+}
+
+</script>
+</head>
+<body onload="_NZZA_onload ">
+ _NZZA_getChanged 
+ _NZZA_getInfo
+<div id="node">
+
+<h1>Node</h1>
+
+<form action="config.htm" method="GET">
+  Name:&nbsp; &nbsp;  <input class="i1" name="name" type="text" size="30" maxlength="30" value="_NZZA_getName ">
+  <br><br>Type:&nbsp; &nbsp; <input class="i1" name="type" type="text" size="30" maxlength="40" value="_NZZA_getType " readonly>
+  <br>
+  <br>
+  <p>Description:<br>
+  <br><textarea class="i1" name="description" cols="30" rows="3">_NZZA_getDescription </textarea>  
+  <br><br><input class="s1" type="submit" value="Save" background="#505050"></p>
+</form>
+ 
+</div>
+
+<h2>Rename Channels</h2>
+<form action="config.htm" method="GET">
+	<table border="0">
+		<tr>
+			<p>Port:</p>
+				<form>
+				<select name="port" size="5" onchange="drawChannelsLocal(this.form.port.value)">
+					_NZZA_getSelectBox
+				</select>
+				</form>
+		</tr>
+		<tr>
+			<td>
+				
+			</td>
+			<td>
+				<p>Channel:</p>
+				<form id="channels1">
+					<select id="select1" name="channels1" size="5">
+					</select>
+				</form>
+			</td>
+			<td>
+				<div id="renameChannelBox">
+				</div>
+			</td>
+		</tr>
+	</table>
+	<input class="s1" type="submit" value="Save" background="#505050">
+	<input id="rename" name="rename" type="hidden" value="true">
+	<input id="renameChannel" name="channel" type="hidden" value="">
+	
+</form>
+<h1>System Configuration</h1>
+
+<form action="form_logging" method = "GET">
+<h2>Logging</h2>
+<h3>Select logging level</h3>
+
+	<input type="radio" class="r1" name="level" value="0" _NZZA_checked0 >0: Off<br>
+	<input type="radio" name="level" value="1" _NZZA_checked1 >1: Fatal<br>
+	<input type="radio" name="level" value="2" _NZZA_checked2 >2: Error<br>
+	<input type="radio" name="level" value="3" _NZZA_checked3 >3: Warning<br>
+	<input type="radio" name="level" value="4" _NZZA_checked4 >4: Event<br>
+	<input type="radio" name="level" value="5" _NZZA_checked5 >5: Support<br><br>
+	<input name="ip" type="text" value="_NZZA_getLogIp " size="30" maxlength="30"><br><br>
+	<input type="checkbox" name="file" value="true" _NZZA_checked_file >Log to file<br>
+	<input type="checkbox" name="user" value="true" _NZZA_checked_user >Enable Logging<br>
+	<input type="checkbox" name="intern" value="true" _NZZA_checked_intern >Intern Logging<br><br>
+	<p><input class="s1" type="submit" class="b2" value="Save"></p>
+
+<p>
+</form>
+<p></p>
+<form action="form_logging" method = "GET">
+  
+</form>
+</p>
+<br>
+<h2>Lock</h2>
+
+<form name="lock" action="config.htm">
+	<input name="lockValue" type="hidden" value="_NZZA_checkedLock ">
+	<input type="checkbox" name="lockCheckbox" onchange="showPassword(this.form.lockCheckbox.checked)" _NZZA_checkedLock >Lock Node<br>
+
+<div id="passwordLock">
+
+</div>
+<br>
+<p><input type="submit" class="s1" value="Save"></p>
+</form>
+<br>
+
+<h2>Set Webserver Port</h2>
+
+<form action="config.htm" method="GET">
+	<input type="radio" class="r1" name="webserverport" value="auto" _NZZA_webserverPortAutoChecked onclick="showWebserverport('auto')">Auto<br>
+	<input type="radio" class="r1" name="webserverport" value="custom" _NZZA_webserverPortCustomChecked onclick="showWebserverport('custom')">Custom<br>
+	<div id="webserverportdiv">
+		
+	</div>
+	<p><input type="submit" class="s1" value="Save"></p>
+</form>
+
+<br>
+
+<h2>Cycle Time</h2>
+Dont change unless you know what you are doing !<br>
+<form name="cylce" action="config.htm">
+	<input name="cycleTime" type="text" size="10" value="_NZZA_getCycleTime ">ms<br>
+	<input type="submit" class="s1" value="Save"></p>
+</form>
+<br>
+
+<h2>Restart</h2>
+<p><a href="reset.htm">Restart IObox</a></p>
+
+</body>
+</html>
